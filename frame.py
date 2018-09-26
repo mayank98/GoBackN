@@ -7,6 +7,6 @@ class dataframe:
 
 class ackframe:
 	"""docstring for ackframe"""
-	def __init__(self, length, index ):
+	def __init__(self, length, index):
 		self.length=length
 		self.index=index
