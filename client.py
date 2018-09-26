@@ -2,7 +2,7 @@ import socket
 from frame import *
 
 HOST = '127.0.0.1'  # The server's hostname or IP address
-PORT = 65432        # The port used by the server
+PORT = 9999        # The port used by the server
 
 d1=dataframe(100,0,"Hello")
 print(d1.data)
