@@ -8,13 +8,14 @@ import os
 import math
 import time
 
-HOST='127.0.0.1'
+HOST=gethostbyname(gethostname())
 PORT=9999
 
 address=(HOST,PORT)
 serverSocket=socket(AF_INET,SOCK_STREAM)
 serverSocket.bind(address)
 serverSocket.settimeout(3)
+serverSocket.listen(1)
 print "Ready to serve"
 
 expected_ack_idx=1
@@ -26,6 +27,7 @@ start_time = time.time()
 while True:
     try:
         # packet_raw,client_address=serverSocket.recvfrom(2024)
+        print("mauank");
         packet_raw=serverSocket.recv(2024)
         packet=pickle.loads(packet_raw)
 
