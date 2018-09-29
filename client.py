@@ -28,6 +28,8 @@ timeout=1
 lastackreceived= time.time()
 packets=[]							#window packets generated stored stored in this
 
+last_ack=-1
+
 def generatePacket(index, size=0):
 	data="Hello"
 	d=dataframe(size,index,data)
@@ -59,6 +61,8 @@ while True:
 		ack = pickle.loads(pickledack)
 		print "Received ack for", ack.index
 		#           slide window and reset timer
+		last_ack=ack.index
+
 		while ack.index>=base and packets:
 			lastackreceived = time.time()
 			for i in range(ack.index-base+1):
@@ -67,6 +71,7 @@ while True:
 
 #TIMEOUT
 	except:
+		print last_ack," in except"
 		if(time.time()-lastackreceived>timeout):
 			for i in packets:
 				print "resend"
