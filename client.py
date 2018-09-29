@@ -26,59 +26,56 @@ window=7
 sendNext=0
 timeout=1
 lastackreceived= time.time()
-packets=[]							#window packets generated stored stored in this
+packets=[]                          #window packets generated stored stored in this
 
 last_ack=-1
-
+sss=(HOST,PORT)
 def generatePacket(index, size=0):
-	data="Hello"
-	d=dataframe(size,index,data)
-	return d
+    data="Hello"
+    d=dataframe(size,index,data)
+    return d
 
 def windowPacket(ind):
-	if ind<len(packets):
-		return packets[ind]
-	else:
-		return None
+    if ind<len(packets):
+        return packets[ind]
+    else:
+        return None
 
 while True:
-	if(sendNext<base+window):
-		size=int(random.uniform(512,2048))
-		pkt=generatePacket(sendNext,size)
-		packets.append(pkt)
-		sendNext+=1
-		pickledpkt=pickle.dumps(pkt)
-		print "sending packet"
-		# clientSocket.send("GET / HTTP/1.1\r\nHost: google.com\r\n\r\n")
-		clientSocket.sendto(pickledpkt,ADDRESS)
-		# print clientSocket.recv(1024)
-		print "yes"
+    if(sendNext<base+window):
+        size=int(random.uniform(512,2048))
+        pkt=generatePacket(sendNext,size)
+        packets.append(pkt)
+        sendNext+=1
+        pickledpkt=pickle.dumps(pkt)
+        print "sending packet"
+        # clientSocket.send("GET / HTTP/1.1\r\nHost: google.com\r\n\r\n")
+        clientSocket.sendto(pickledpkt,ADDRESS)
+        # print clientSocket.recv(1024)
+        print "yes"
 
 #RECEIPT OF AN ACK
-	try:
-		pickledack,sss= clientSocket.recvfrom(1024)
-		# ack = []
-		ack = pickle.loads(pickledack)
-		print "Received ack for", ack.index
-		#           slide window and reset timer
-		last_ack=ack.index
+    try:
+        pickledack,sss = clientSocket.recvfrom(1024)
+        # ack = []
+        ack = pickle.loads(pickledack)
+        print "Received ack for", ack.index
+        #           slide window and reset timer
+        last_ack=ack.index
 
-		while ack.index>=base and packets:
-			lastackreceived = time.time()
-			for i in range(ack.index-base+1):
-				del window[i]
-			base = ack.index + 1
+        while ack.index>=base and packets:
+            lastackreceived = time.time()
+            for i in range(ack.index-base+1):
+                del packets[0]
+            base = ack.index + 1
 
 #TIMEOUT
-	except:
-		print last_ack," in except"
-		if(time.time()-lastackreceived>timeout):
-			for i in packets:
-				print "resend"
-				clientSocket.sendto(pickle.dumps(i),ADDRESS)
-
-
-
+    except:
+        print last_ack," in except"
+        if(time.time()-lastackreceived>timeout):
+            for i in packets:
+                print "resend"
+                clientSocket.sendto(pickle.dumps(i),ADDRESS)
 
 
 
