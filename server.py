@@ -60,7 +60,7 @@ while True:
             # h = hashlib.md5()
             # h.update(pickle.dumps(sndpkt))
             # sndpkt.append(h.digest())
-            send_packet=ackframe(256,expected_ack_idx)
+            send_packet=ackframe(256,expected_ack_idx-1)
             serverSocket.sendto(pickle.dumps(send_packet),address)
             # BadNet.transmit(serverSocket, pickle.dumps(sndpkt), clientAddress[0], clientAddress[1])
             print "Ack", expected_ack_idx
