@@ -15,7 +15,7 @@ clientSocket=socket(AF_INET, SOCK_DGRAM)
 ADDRESS=(HOST,PORT)
 # clientSocket.connect(ADDRESS)
 
-clientSocket=socket(AF_INET, SOCK_STREAM)
+# clientSocket=socket(AF_INET, SOCK_STREAM)
 # clientSocket.connect((HOST,PORT))
 # clientSocket=create_connection((HOST, PORT))
 clientSocket.settimeout(0.01)
@@ -24,7 +24,7 @@ clientSocket.settimeout(0.01)
 base=0
 window=7
 sendNext=0
-timeout=0.1
+timeout=1
 lastackreceived= time.time()
 packets=[]							#window packets generated stored stored in this
 
@@ -55,11 +55,11 @@ while True:
 #RECEIPT OF AN ACK
 	try:
 		pickledack,sss= clientSocket.recvfrom(1024)
-		ack = []
+		# ack = []
 		ack = pickle.loads(pickledack)
 		print "Received ack for", ack.index
 		#           slide window and reset timer
-		while ack.index>base and packets:
+		while ack.index>=base and packets:
 			lastackreceived = time.time()
 			for i in range(ack.index-base+1):
 				del window[i]
