@@ -15,6 +15,8 @@ clientSocket=socket(AF_INET, SOCK_DGRAM)
 ADDRESS=(HOST,PORT)
 # clientSocket.connect(ADDRESS)
 
+clientSocket=socket(AF_INET, SOCK_STREAM)
+# clientSocket.connect((HOST,PORT))
 # clientSocket=create_connection((HOST, PORT))
 clientSocket.settimeout(0.01)
 

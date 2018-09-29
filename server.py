@@ -12,7 +12,7 @@ HOST=gethostbyname(gethostname())
 PORT=9999
 
 address=(HOST,PORT)
-serverSocket=socket(AF_INET,SOCK_STREAM)
+serverSocket=socket(AF_INET,SOCK_DGRAM)
 serverSocket.bind(address)
 serverSocket.settimeout(3)
 serverSocket.listen(1)
@@ -28,7 +28,9 @@ while True:
     try:
         # packet_raw,client_address=serverSocket.recvfrom(2024)
         print("mauank");
-        packet_raw=serverSocket.recv(2024)
+        packet_raw,sss=serverSocket.recvfrom(2024)
+        print("mauank2");
+        
         packet=pickle.loads(packet_raw)
 
         if(packet.index==expected_ack_idx):
@@ -47,7 +49,7 @@ while True:
             # h.update(pickle.dumps(sndpkt))
             # sndpkt.append(h.digest())
             # BadNet.transmit(serverSocket, pickle.dumps(sndpkt), clientAddress[0], clientAddress[1])
-            serverSocket.send(pickle.dumps(send_packet))
+            serverSocket.sendto(pickle.dumps(send_packet),address)
             print "New Ack", expected_ack_idx
 
         else:
@@ -59,7 +61,7 @@ while True:
             # h.update(pickle.dumps(sndpkt))
             # sndpkt.append(h.digest())
             send_packet=ackframe(256,expected_ack_idx)
-            serverSocket.send(pickle.dumps(send_packet))
+            serverSocket.sendto(pickle.dumps(send_packet),address)
             # BadNet.transmit(serverSocket, pickle.dumps(sndpkt), clientAddress[0], clientAddress[1])
             print "Ack", expected_ack_idx
     except:
