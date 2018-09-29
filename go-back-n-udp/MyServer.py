@@ -24,7 +24,7 @@ ack = []
 #RECEIVES DATA
 f = open("output", "wb")
 endoffile = False
-lastpktreceived = time.time()   
+lastpktreceived = time.time()
 starttime = time.time()
 
 while True:
