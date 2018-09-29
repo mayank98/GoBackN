@@ -6,14 +6,14 @@ import pickle
 import random
 
 HOST = gethostbyname(gethostname())  # The receiver's hostname or IP address
-PORT = 9999        # The port used by the receiver
+PORT = 9998        # The port used by the receiver
 address=(HOST,PORT)
 mySocket=socket(AF_INET,SOCK_DGRAM)
 mySocket.bind(address)
 mySocket.settimeout(3)
 
 otherSocket=socket(AF_INET, SOCK_DGRAM)
-ADDRESS=(HOST,9998)
+ADDRESS=(HOST,9999)
 otherSocket.settimeout(0.01)
 
 
