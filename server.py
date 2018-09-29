@@ -15,11 +15,11 @@ address=(HOST,PORT)
 serverSocket=socket(AF_INET,SOCK_DGRAM)
 serverSocket.bind(address)
 serverSocket.settimeout(3)
-serverSocket.listen(1)
+# serverSocket.listen(1)
 print "Ready to serve"
 
-expected_ack_idx=1
-current_ack_idx=1
+expected_ack_idx=0
+current_ack_idx=0
 
 last_pkt_received_time = time.time()
 start_time = time.time()
@@ -28,7 +28,7 @@ while True:
     try:
         # packet_raw,client_address=serverSocket.recvfrom(2024)
         print("mauank");
-        packet_raw,sss=serverSocket.recvfrom(2024)
+        packet_raw,sss=serverSocket.recvfrom(4096)
         print("mauank2");
         
         packet=pickle.loads(packet_raw)
@@ -39,12 +39,12 @@ while True:
             #     f.write(rcvpkt[1])
             # else:
             #     endoffile = True
-            expected_ack_idx += 1
 #               create ACK (seqnum,checksum)
             # sndpkt = []
             # sndpkt.append(expected_ack_idx)
             
             send_packet=ackframe(256,expected_ack_idx)
+            expected_ack_idx += 1
             # h = hashlib.md5()
             # h.update(pickle.dumps(sndpkt))
             # sndpkt.append(h.digest())
