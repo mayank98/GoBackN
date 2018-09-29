@@ -28,8 +28,8 @@ while True:
     try:
         # packet_raw,client_address=serverSocket.recvfrom(2024)
         print("mauank");
-        packet_raw,sss=serverSocket.recvfrom(4096)
-        print("mauank2",sss);
+        packet_raw,client_address=serverSocket.recvfrom(4096)
+        print("mauank2",client_address);
         
         packet=pickle.loads(packet_raw)
 
@@ -49,7 +49,7 @@ while True:
             # h.update(pickle.dumps(sndpkt))
             # sndpkt.append(h.digest())
             # BadNet.transmit(serverSocket, pickle.dumps(sndpkt), clientAddress[0], clientAddress[1])
-            serverSocket.sendto(pickle.dumps(send_packet),sss)
+            serverSocket.sendto(pickle.dumps(send_packet),client_address)
             print "New Ack", expected_ack_idx
 
         else:
@@ -61,7 +61,7 @@ while True:
             # h.update(pickle.dumps(sndpkt))
             # sndpkt.append(h.digest())
             send_packet=ackframe(256,expected_ack_idx-1)
-            serverSocket.sendto(pickle.dumps(send_packet),sss)
+            serverSocket.sendto(pickle.dumps(send_packet),client_address)
             # BadNet.transmit(serverSocket, pickle.dumps(sndpkt), clientAddress[0], clientAddress[1])
             print "Ack", expected_ack_idx
     except:

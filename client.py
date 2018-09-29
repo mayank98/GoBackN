@@ -29,7 +29,6 @@ lastackreceived= time.time()
 packets=[]                          #window packets generated stored stored in this
 
 last_ack=-1
-sss=(HOST,PORT)
 def generatePacket(index, size=0):
     data="Hello"
     d=dataframe(size,index,data)
