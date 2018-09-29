@@ -7,17 +7,22 @@ import random
 HOST = gethostbyname(gethostname())  # The server's hostname or IP address
 PORT = 9999        # The port used by the server
 
+# HOST = gethostbyname("www.google.com")  # The server's hostname or IP address
+# PORT = 80
+
 #create client socket
-clientSocket=socket(AF_INET, SOCK_STREAM)
-clientSocket.connect((HOST,PORT))
+clientSocket=socket(AF_INET, SOCK_DGRAM)
+ADDRESS=(HOST,PORT)
+# clientSocket.connect(ADDRESS)
+
 # clientSocket=create_connection((HOST, PORT))
-clientSocket.settimeout(0.001)
+clientSocket.settimeout(0.01)
 
 
 base=0
 window=7
 sendNext=0
-timeout=0.01
+timeout=0.1
 lastackreceived= time.time()
 packets=[]							#window packets generated stored stored in this
 
@@ -34,16 +39,20 @@ def windowPacket(ind):
 
 while True:
 	if(sendNext<base+window):
-		size=int(random.uniform(512,2024))
+		size=int(random.uniform(512,2048))
 		pkt=generatePacket(sendNext,size)
 		packets.append(pkt)
 		sendNext+=1
 		pickledpkt=pickle.dumps(pkt)
-		clientSocket.sendto(pickledpkt,(HOST,PORT))
+		print "sending packet"
+		# clientSocket.send("GET / HTTP/1.1\r\nHost: google.com\r\n\r\n")
+		clientSocket.sendto(pickledpkt,ADDRESS)
+		# print clientSocket.recv(1024)
+		print "yes"
 
 #RECEIPT OF AN ACK
 	try:
-		pickledack= clientSocket.recv(256)
+		pickledack,sss= clientSocket.recvfrom(1024)
 		ack = []
 		ack = pickle.loads(pickledack)
 		print "Received ack for", ack.index
@@ -58,7 +67,8 @@ while True:
 	except:
 		if(time.time()-lastackreceived>timeout):
 			for i in packets:
-				clientSocket.sendto(pickle.dumps(i),(HOST,PORT))
+				print "resend"
+				clientSocket.sendto(pickle.dumps(i),ADDRESS)
 
 
 
