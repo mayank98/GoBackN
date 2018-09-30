@@ -1,6 +1,7 @@
 from socket import *
 from random import *
 from frame import *
+import time
 
 drop_prob_dataframe = 0.1
 drop_prob_ackframe = 0.05
@@ -16,4 +17,6 @@ def transmit(in_socket,message,address):
 
     # send ack/packet if the number generated greater than drop prob
     if (random() > drop_prob):
+    	delay=0.005*random()
+    	time.sleep(delay)
         in_socket.sendto(message,address)
