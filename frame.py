@@ -1,5 +1,6 @@
 class dataframe:
 	"""docstring for dataframe"""
+	"""length signifies size of the dataframe """
 	def __init__(self, length, index, data):
 		self.length=length
 		self.data=data
