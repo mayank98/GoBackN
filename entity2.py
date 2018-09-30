@@ -105,12 +105,12 @@ def receiver():
 	    try:
 	        packet_raw,sender_address=mySocket.recvfrom(4096)
 	        packet=pickle.loads(packet_raw)
-	        with lock:
-	        	totalRecieved+=1
-	        	bytesRecieved+=packet.length
 
 	        #Check the object being received is of type dataframe
 	        if packet.__class__.__name__=="dataframe":
+		        with lock:
+		        	totalRecieved+=1
+		        	bytesRecieved+=packet.length
 
 	        	# Send the next ack if packet recieved in-order
 		        if(packet.index==expected_ack_idx):
