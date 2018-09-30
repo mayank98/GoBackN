@@ -25,6 +25,7 @@ newPackets=0
 resentPackets=0
 newRecieved=0
 totalRecieved=0
+bytesRecieved=0
 lock=Lock()
 
 #Generate random words of given length
@@ -94,7 +95,7 @@ def sender():
 #This is our server function
 #It recieves packet over the network and sends acknowledgement for the packets recieved
 def receiver():
-	global newRecieved, totalRecieved
+	global newRecieved, totalRecieved, bytesRecieved
 	expected_ack_idx=0
 
 	last_pkt_received_time = time.time()
@@ -114,6 +115,7 @@ def receiver():
 		        if(packet.index==expected_ack_idx):
 		            with lock:
 		            	newRecieved+=1
+		            	bytesRecieved+=packet.length
 
 		            send_packet=ackframe(256,expected_ack_idx)
 		            expected_ack_idx += 1
@@ -128,7 +130,7 @@ def receiver():
 	    	x=0
 
 def summary():
-    global sentPackets, newPackets, resentPackets, newRecieved, totalRecieved, t0
+    global sentPackets, newPackets, resentPackets, newRecieved, totalRecieved, t0, bytesRecieved
 	#Summary of previous 2 seconds
     while True:
 	    # print "summary"
@@ -141,6 +143,7 @@ def summary():
 		    	print "Number of packets resent: ", resentPackets
 		    	print "Total number of packets recieved: ", totalRecieved
 		    	print "Number of packets recieved in order: ", newRecieved
+		    	print "Number of bytes recieved: ", bytesRecieved
 		    	print "##############################################"
 		    	t0=time.time()
 		    	sentPackets=0
@@ -148,6 +151,7 @@ def summary():
 		    	resentPackets=0
 		    	newRecieved=0
 		    	totalRecieved=0
+		    	bytesRecieved=0
 
 
 if __name__=="__main__":

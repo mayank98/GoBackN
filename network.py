@@ -14,5 +14,6 @@ def transmit(in_socket,message,address):
     else:
         drop_prob=drop_prob_dataframe
 
+    # send ack/packet if the number generated greater than drop prob
     if (random() > drop_prob):
         in_socket.sendto(message,address)
