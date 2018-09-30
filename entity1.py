@@ -5,6 +5,7 @@ import time
 import pickle
 import random
 import string
+from network import transmit
 
 HOST = gethostbyname(gethostname())  # The receiver's hostname or IP address
 PORT = 9999        # The port used by the receiver
@@ -26,7 +27,7 @@ newRecieved=0
 totalRecieved=0
 lock=Lock()
 
-#Generate random words of given length
+#Generate random words of givene length
 def randomword(length):
    letters = string.ascii_lowercase
    return ''.join(random.choice(letters) for i in range(length))
@@ -58,20 +59,25 @@ def sender():
 	        packets.append(pkt)
 	        sendNext+=1
 	        pickledpkt=pickle.dumps(pkt)
-	        otherSocket.sendto(pickledpkt,ADDRESS)
+	        # print "sending packet", sendNext-1
+	        # otherSocket.send("GET / HTTP/1.1\r\nHost: google.com\r\n\r\n")
+	        transmit(otherSocket,pickledpkt,ADDRESS)
 	        with lock:
 	        	sentPackets+=1
 	        	newPackets+=1
+	        # print otherSocket.recv(1024)
+	        # print "yes"
 
 	#RECEIPT OF AN ACK
 	    try:
 	        pickledack,sss = otherSocket.recvfrom(1024)
+	        # ack = []
 	        ack = pickle.loads(pickledack)
 
 	        #Check the object being received is of type ackframe
 	        if ack.__class__.__name__=="ackframe":
+		        # print "Received ack for", ack.index
 		        last_ack=ack.index
-
 		        # slide window and reset timer
 		        while ack.index>=base and packets:
 		            lastackreceived = time.time()
@@ -83,10 +89,11 @@ def sender():
 
 	#TIMEOUT
 	    except:
-	    	#resend the packets that were part of the window
+	        # print last_ack," in except"
 	        if(time.time()-lastackreceived>timeout):
 	            for i in packets:
-	                otherSocket.sendto(pickle.dumps(i),ADDRESS)
+	                # print "resend ",i.index
+	                transmit(otherSocket,pickle.dumps(i),ADDRESS)
 	                with lock:
 		                sentPackets+=1
 		                resentPackets+=1
@@ -102,27 +109,48 @@ def receiver():
 
 	while True:
 	    try:
+	        # packet_raw,sender_address=mySocket.recvfrom(2024)
+	        # print("mauank");
 	        packet_raw,sender_address=mySocket.recvfrom(4096)
+	        # print("mauank2",sender_address);
 	        with lock:
 	        	totalRecieved+=1
 
 	        packet=pickle.loads(packet_raw)
-	        #Check the object being received is of type dataframe
 	        if packet.__class__.__name__=="dataframe":
-
-	        	#Send next ack if packet in-order
 		        if(packet.index==expected_ack_idx):
+		            # print "Received inorder", expected_ack_idx
 		            with lock:
 		            	newRecieved+=1
+		            # if rcvpkt[1]:
+		            #     f.write(rcvpkt[1])
+		            # else:
+		            #     endoffile = True
+		#               create ACK (seqnum,checksum)
+		            # sndpkt = []
+		            # sndpkt.append(expected_ack_idx)
 		            
 		            send_packet=ackframe(256,expected_ack_idx)
 		            expected_ack_idx += 1
-		            mySocket.sendto(pickle.dumps(send_packet),sender_address)
+		            # h = hashlib.md5()
+		            # h.update(pickle.dumps(sndpkt))
+		            # sndpkt.append(h.digest())
+		            # BadNet.transmit(mySocket, pickle.dumps(sndpkt), senderAddress[0], senderAddress[1])
+		            transmit(mySocket,pickle.dumps(send_packet),sender_address)
+		            # print "New Ack", expected_ack_idx
 
-		        #Send the previous ack
 		        else:
+		#       default? discard packet and resend ACK for most recently received inorder pkt
+		            # print "Received out of order", packet.index
+		            # sndpkt = []
+		            # sndpkt.append(expected_ack_idx)
+		            # h = hashlib.md5()
+		            # h.update(pickle.dumps(sndpkt))
+		            # sndpkt.append(h.digest())
 		            send_packet=ackframe(256,expected_ack_idx-1)
-		            mySocket.sendto(pickle.dumps(send_packet),sender_address)
+		            transmit(mySocket,pickle.dumps(send_packet),sender_address)
+		            # BadNet.transmit(mySocket, pickle.dumps(sndpkt), clientAddress[0], clientAddress[1])
+		            # print "Ack", expected_ack_idx
 	    except:
 	    	#Nothing recieved
 	    	x=0
@@ -159,4 +187,4 @@ if __name__=="__main__":
 
 	ts.start()
 	tr.start()
-	su.start()
+su.start()

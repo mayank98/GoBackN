@@ -5,6 +5,7 @@ import time
 import pickle
 import random
 import string
+from network import transmit
 
 HOST = gethostbyname(gethostname())  # The receiver's hostname or IP address
 PORT = 9998        # The port used by the receiver
@@ -60,7 +61,7 @@ def sender():
 	        pickledpkt=pickle.dumps(pkt)
 	        # print "sending packet", sendNext-1
 	        # otherSocket.send("GET / HTTP/1.1\r\nHost: google.com\r\n\r\n")
-	        otherSocket.sendto(pickledpkt,ADDRESS)
+	        transmit(otherSocket,pickledpkt,ADDRESS)
 	        with lock:
 	        	sentPackets+=1
 	        	newPackets+=1
@@ -92,7 +93,7 @@ def sender():
 	        if(time.time()-lastackreceived>timeout):
 	            for i in packets:
 	                # print "resend ",i.index
-	                otherSocket.sendto(pickle.dumps(i),ADDRESS)
+	                transmit(otherSocket,pickle.dumps(i),ADDRESS)
 	                with lock:
 		                sentPackets+=1
 		                resentPackets+=1
@@ -135,7 +136,7 @@ def receiver():
 		            # h.update(pickle.dumps(sndpkt))
 		            # sndpkt.append(h.digest())
 		            # BadNet.transmit(mySocket, pickle.dumps(sndpkt), senderAddress[0], senderAddress[1])
-		            mySocket.sendto(pickle.dumps(send_packet),sender_address)
+		            transmit(mySocket,pickle.dumps(send_packet),sender_address)
 		            # print "New Ack", expected_ack_idx
 
 		        else:
@@ -147,7 +148,7 @@ def receiver():
 		            # h.update(pickle.dumps(sndpkt))
 		            # sndpkt.append(h.digest())
 		            send_packet=ackframe(256,expected_ack_idx-1)
-		            mySocket.sendto(pickle.dumps(send_packet),sender_address)
+		            transmit(mySocket,pickle.dumps(send_packet),sender_address)
 		            # BadNet.transmit(mySocket, pickle.dumps(sndpkt), clientAddress[0], clientAddress[1])
 		            # print "Ack", expected_ack_idx
 	    except:
